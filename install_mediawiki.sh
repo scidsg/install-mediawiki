@@ -7,6 +7,8 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install -y nginx php-fpm php-mysql php-intl mariadb-server tor whiptail
 
 # Get user input using whiptail
+EMAIL=$(whiptail --inputbox "What's your email address?" 8 78 --title "Email Address" 3>&1 1>&2 2>&3)
+DB_NAME=$(whiptail --inputbox "Please enter a name for the database:" 8 78 --title "Database Name" 3>&1 1>&2 2>&3)
 DB_USER=$(whiptail --inputbox "Please enter a username for the database user:" 8 78 --title "Database Username" 3>&1 1>&2 2>&3)
 DB_PASSWORD=$(whiptail --passwordbox "Please enter a password for the '$DB_USER' database user:" 8 78 --title "Database Password" 3>&1 1>&2 2>&3)
 SKIN_NAME=$(whiptail --inputbox "Please enter a name for your custom skin (e.g., MyCustomSkin):" 8 78 --title "Skin Name" 3>&1 1>&2 2>&3)
@@ -14,6 +16,7 @@ AUTHOR_NAME=$(whiptail --inputbox "Please enter your name (author of the custom 
 AUTHOR_URL=$(whiptail --inputbox "Please enter your website URL (author of the custom skin):" 8 78 --title "Author URL" 3>&1 1>&2 2>&3)
 CUSTOM_CSS="resources/custom.css"
 SKIN_DIR="/var/www/html/mediawiki/skins/$SKIN_NAME"
+PUBLIC_IP=$(curl -s ifconfig.co)
 
 # Configure MariaDB
 sudo mysql_secure_installation
@@ -188,7 +191,7 @@ $wgMetaNamespace = "DDoS_Vector";
 $wgScriptPath = "";
 
 ## The protocol and server name to use in fully-qualified URLs
-$wgServer = "http://138.68.64.73";
+$wgServer = "http://$PUBLIC_IP";
 
 ## The URL path to static resources (images, scripts, etc.)
 $wgResourceBasePath = $wgScriptPath;
@@ -198,7 +201,7 @@ $wgResourceBasePath = $wgScriptPath;
 $wgLogos = [
     '1x' => "$wgResourceBasePath/resources/assets/change-your-logo.svg",
     'wordmark' => [
-        "src" => "DDoS Skin",
+        "src" => "$DB_NAME",
         "width" => 119,
         "height" => 18,
     ],
@@ -210,8 +213,8 @@ $wgLogos = [
 $wgEnableEmail = true;
 $wgEnableUserEmail = true; # UPO
 
-$wgEmergencyContact = "demo@scidsg.org";
-$wgPasswordSender = "demo@scidsg.org";
+$wgEmergencyContact = "$EMAIL";
+$wgPasswordSender = "$EMAIL";
 
 $wgEnotifUserTalk = false; # UPO
 $wgEnotifWatchlist = false; # UPO
@@ -220,9 +223,9 @@ $wgEmailAuthentication = true;
 ## Database settings
 $wgDBtype = "mysql";
 $wgDBserver = "localhost";
-$wgDBname = "mediawiki";
-$wgDBuser = "mediawiki";
-$wgDBpassword = "your_password_here";
+$wgDBname = "$DB_NAME";
+$wgDBuser = "$DB_PASSWORD";
+$wgDBpassword = "$DB_PASSWORD";
 
 # MySQL specific settings
 $wgDBprefix = "mw_";
