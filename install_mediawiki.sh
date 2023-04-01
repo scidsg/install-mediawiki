@@ -4,11 +4,7 @@
 sudo apt update && sudo apt -y dist-upgrade && sudo apt -y autoremove
 
 # Install necessary packages
-sudo apt install -y nginx php-fpm php-mysql php-intl mariadb-server tor whiptail php-mbstring php-xml nodejs yarn
-
-curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/yarnkey.gpg >/dev/null
-     echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-     sudo apt-get update && sudo apt-get install yarn
+sudo apt install -y nginx php-fpm php-mysql php-intl mariadb-server tor whiptail php-mbstring php-xml 
 
 # Get user input using whiptail
 EMAIL=$(whiptail --inputbox "What's your email address?" 8 78 --title "Email Address" 3>&1 1>&2 2>&3)
@@ -195,7 +191,7 @@ $wgMetaNamespace = "DDoS_Vector";
 $wgScriptPath = "";
 
 ## The protocol and server name to use in fully-qualified URLs
-$wgServer = "http://${PUBLIC_IP}";
+$wgServer = "http://$PUBLIC_IP";
 
 ## The URL path to static resources (images, scripts, etc.)
 $wgResourceBasePath = $wgScriptPath;
@@ -228,7 +224,7 @@ $wgEmailAuthentication = true;
 $wgDBtype = "mysql";
 $wgDBserver = "localhost";
 $wgDBname = "$DB_NAME";
-$wgDBuser = "$DB_USER";
+$wgDBuser = "$DB_PASSWORD";
 $wgDBpassword = "$DB_PASSWORD";
 
 # MySQL specific settings
