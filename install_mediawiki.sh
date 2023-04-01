@@ -195,7 +195,7 @@ $wgMetaNamespace = "DDoS_Vector";
 $wgScriptPath = "";
 
 ## The protocol and server name to use in fully-qualified URLs
-$wgServer = "http://$PUBLIC_IP";
+$wgServer = "http://${PUBLIC_IP}";
 
 ## The URL path to static resources (images, scripts, etc.)
 $wgResourceBasePath = $wgScriptPath;
@@ -228,7 +228,7 @@ $wgEmailAuthentication = true;
 $wgDBtype = "mysql";
 $wgDBserver = "localhost";
 $wgDBname = "$DB_NAME";
-$wgDBuser = "$DB_PASSWORD";
+$wgDBuser = "$DB_USER";
 $wgDBpassword = "$DB_PASSWORD";
 
 # MySQL specific settings
