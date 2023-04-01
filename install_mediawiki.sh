@@ -16,7 +16,7 @@ sudo mysql -e "GRANT ALL PRIVILEGES ON mediawiki.* TO 'mediawiki'@'localhost';"
 sudo mysql -e "FLUSH PRIVILEGES;"
 
 # Download and extract MediaWiki
-wget https://releases.wikimedia.org/mediawiki/1.37/mediawiki-1.37.0.tar.gz
+wget https://releases.wikimedia.org/mediawiki/1.39/mediawiki-1.39.3.tar.gz
 tar xvzf mediawiki-*.tar.gz
 sudo mkdir -p /var/www/html/mediawiki
 sudo mv mediawiki*/* /var/www/html/mediawiki
