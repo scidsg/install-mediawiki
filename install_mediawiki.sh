@@ -4,15 +4,22 @@
 sudo apt update && sudo apt upgrade -y
 
 # Install necessary packages
-sudo apt install -y nginx php-fpm php-mysql php-intl mariadb-server tor
+sudo apt install -y nginx php-fpm php-mysql php-intl mariadb-server tor whiptail
+
+# Get user input using whiptail
+DB_USER=$(whiptail --inputbox "Please enter a username for the database user:" 8 78 --title "Database Username" 3>&1 1>&2 2>&3)
+DB_PASSWORD=$(whiptail --passwordbox "Please enter a password for the 'mediawiki' database user:" 8 78 --title "Database Password" 3>&1 1>&2 2>&3)
+SKIN_NAME=$(whiptail --inputbox "Please enter a name for your custom skin (e.g., MyCustomSkin):" 8 78 --title "Skin Name" 3>&1 1>&2 2>&3)
+AUTHOR_NAME=$(whiptail --inputbox "Please enter your name (author of the custom skin):" 8 78 --title "Author Name" 3>&1 1>&2 2>&3)
+AUTHOR_URL=$(whiptail --inputbox "Please enter your website URL (author of the custom skin):" 8 78 --title "Author URL" 3>&1 1>&2 2>&3)
 
 # Configure MariaDB
 sudo mysql_secure_installation
 
 # Create a database and user for MediaWiki
 sudo mysql -e "CREATE DATABASE mediawiki;"
-sudo mysql -e "CREATE USER 'mediawiki'@'localhost' IDENTIFIED BY 'your_password_here';"
-sudo mysql -e "GRANT ALL PRIVILEGES ON mediawiki.* TO 'mediawiki'@'localhost';"
+sudo mysql -e "CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASSWORD';"
+sudo mysql -e "GRANT ALL PRIVILEGES ON mediawiki.* TO '$DB_USER'@'localhost';"
 sudo mysql -e "FLUSH PRIVILEGES;"
 
 # Download and extract MediaWiki
@@ -48,7 +55,85 @@ HiddenServiceDir /var/lib/tor/mediawiki_hidden_service/
 HiddenServicePort 80 127.0.0.1:80
 EOT'
 sudo systemctl restart tor
-sleep 5
+
+# Create custom skin
+cd /var/www/html/mediawiki/skins/
+sudo mkdir "$SKIN_NAME"
+cd "$SKIN_NAME"
+sudo mkdir resources
+sudo touch MyCustomSkin.php
+sudo touch MyCustomSkinTemplate.php
+sudo touch skin.json
+
+# Write skin.json
+sudo bash -c "cat <<EOT > skin.json
+{
+    \"name\": \"$SKIN_NAME\",
+    \"author\": \"$AUTHOR_NAME\",
+    \"url\": \"$AUTHOR_URL\",
+    \"descriptionmsg\": \"${SKIN_NAME,,}-desc\",
+    \"version\": \"1.0\",
+    \"license-name\": \"GPL-2.0-or-later\",
+    \"type\": \"skin\",
+    \"AutoloadClasses\": {
+        \"Skin${SKIN_NAME}\": \"MyCustomSkin.php\",
+        \"${SKIN_NAME}Template\": \"MyCustomSkinTemplate.php\"
+    },
+    \"ResourceModules\": {
+        \"skins.${SKIN_NAME,,}\": {
+            \"styles\": {
+                \"resources/screen.css\": \"all\"
+            }
+        }
+    },
+    \"ResourceFileModulePaths\": {
+        \"localBasePath\": \"\",
+        \"remoteSkinPath\": \"$SKIN_NAME\"
+    }
+}
+EOT"
+
+# Write MyCustomSkin.php
+sudo bash -c "cat <<EOT > MyCustomSkin.php
+<?php
+class Skin${SKIN_NAME} extends SkinTemplate {
+    public \$skinname = '${SKIN_NAME,,}';
+    public \$stylename = '$SKIN_NAME';
+    public \$template = '${SKIN_NAME}Template';
+
+    public function initPage(OutputPage \$out) {
+        parent::initPage(\$out);
+        \$out->addModuleStyles('skins.${SKIN_NAME,,}');
+    }
+}
+EOT"
+
+# Write MyCustomSkinTemplate.php
+sudo bash -c "cat <<EOT > MyCustomSkinTemplate.php
+<?php
+class ${SKIN_NAME}Template extends BaseTemplate {
+    public function execute() {
+        \$this->html('headelement');
+        // Add your HTML and PHP code for the skin structure here
+        \$this->html('bodytext');
+        \$this->html('bottomscripts');
+        \$this->html('debughtml');
+        \$this->html('/body');
+        \$this->html('/html');
+    }
+}
+EOT"
+
+# Create CSS file
+sudo touch resources/screen.css
+
+# Enable the custom skin in LocalSettings.php
+cd /var/www/html/mediawiki
+sudo bash -c "echo \"wfLoadSkin('$SKIN_NAME');\" >> LocalSettings.php"
+sudo bash -c "echo \"\$wgDefaultSkin = '${SKIN_NAME,,}';\" >> LocalSettings.php"
+
+echo "Your custom skin has been created and applied to your MediaWiki installation."
+
 
 # Create LocalSettings.php file
 sudo bash -c "cat > /var/www/html/mediawiki/LocalSettings.php" << 'EOT'
