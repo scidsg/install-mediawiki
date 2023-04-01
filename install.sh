@@ -6,14 +6,18 @@ sudo apt -y dist-upgrade
 sudo apt -y autoremove
 
 # Install necessary packages
-sudo apt install -y apache2 php libapache2-mod-php mariadb-server php-mysql php-xml php-mbstring php-apcu php-intl imagemagick php-gd php-cli php-curl git
+sudo apt install -y apache2 php libapache2-mod-php mariadb-server php-mysql php-xml php-mbstring php-apcu php-intl imagemagick php-gd php-cli curl php-curl git
+
+# Get the latest MediaWiki version and tarball URL
+MW_TARBALL_URL=$(curl -s https://www.mediawiki.org/wiki/Download | grep -oP '(?<=href=")[^"]+(?=\.tar\.gz")' | head -1)
+MW_VERSION=$(echo $MW_TARBALL_URL | grep -oP '(?<=mediawiki-)[^/]+')
 
 # Download MediaWiki
-wget https://releases.wikimedia.org/mediawiki/1.39/mediawiki-1.39.3.tar.gz
-tar xvzf mediawiki-1.39.3.tar.gz
+wget -O mediawiki-${MW_VERSION}.tar.gz "${MW_TARBALL_URL}.tar.gz"
+tar xvzf mediawiki-${MW_VERSION}.tar.gz
 
 # Move MediaWiki to the web server directory
-sudo mv mediawiki-1.39.3 /var/www/html/mediawiki
+sudo mv mediawiki-${MW_VERSION} /var/www/html/mediawiki
 
 # Set appropriate permissions
 sudo chown -R www-data:www-data /var/www/html/mediawiki
