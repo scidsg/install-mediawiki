@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Update and upgrade packages
-sudo apt update && sudo apt upgrade -y
+sudo apt update && sudo apt -y dist-upgrade && sudo apt -y autoremove
 
 # Install necessary packages
 sudo apt install -y nginx php-fpm php-mysql php-intl mariadb-server tor whiptail
@@ -12,8 +12,8 @@ DB_NAME=$(whiptail --inputbox "Please enter a name for the database:" 8 78 --tit
 DB_USER=$(whiptail --inputbox "Please enter a username for the database user:" 8 78 --title "Database Username" 3>&1 1>&2 2>&3)
 DB_PASSWORD=$(whiptail --passwordbox "Please enter a password for the '$DB_USER' database user:" 8 78 --title "Database Password" 3>&1 1>&2 2>&3)
 SKIN_NAME=$DB_NAME
-AUTHOR_NAME=$(whiptail --inputbox "Please enter your name (author of the custom skin):" 8 78 --title "Author Name" 3>&1 1>&2 2>&3)
-AUTHOR_URL=$(whiptail --inputbox "Please enter your website URL (author of the custom skin):" 8 78 --title "Author URL" 3>&1 1>&2 2>&3)
+AUTHOR_NAME=$(whiptail --inputbox "What's your name?" 8 78 --title "Author Name" 3>&1 1>&2 2>&3)
+AUTHOR_URL=$(whiptail --inputbox "What's your project's web address?" 8 78 --title "Author URL" 3>&1 1>&2 2>&3)
 CUSTOM_CSS="resources/custom.css"
 SKIN_DIR="/var/www/html/mediawiki/skins/$SKIN_NAME"
 PUBLIC_IP=$(curl -s ifconfig.co)
