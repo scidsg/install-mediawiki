@@ -6,7 +6,7 @@ sudo apt -y dist-upgrade
 sudo apt -y autoremove
 
 # Install necessary packages
-sudo apt install -y apache2 php libapache2-mod-php mariadb-server php-mysql php-xml php-mbstring php-apcu php-intl imagemagick php-gd php-cli php-curl git
+sudo apt install -y apache2 php libapache2-mod-php mariadb-server php-mysql php-xml php-mbstring php-apcu php-intl imagemagick php-gd php-cli curl php-curl git
 
 # Get the latest MediaWiki version
 MW_VERSION=$(curl -s https://api.github.com/repos/wikimedia/mediawiki/tags | grep -oP '(?<="name": "REL)[^"]+' | head -1 | sed 's/^/1./')
