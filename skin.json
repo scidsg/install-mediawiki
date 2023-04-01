@@ -1,21 +1,11 @@
 {
-	"name": "Vector",
+	"name": "ddos-vector-skin",
 	"version": "1.0.0",
 	"author": [
-		"[https://www.mediawiki.org/wiki/Readers/Web/Team Readers Web Team]",
-		"Trevor Parscal",
-		"Roan Kattouw",
-		"Alex Hollender",
-		"Bernard Wang",
-		"Clare Ming",
-		"Jan Drewniak",
-		"Jon Robson",
-		"Nick Ray",
-		"Sam Smith",
-		"Stephen Niedzielski",
-		"Volker E."
+		"[https://scidsg.org]",
+		"Glenn Sorrentino"
 	],
-	"url": "https://www.mediawiki.org/wiki/Skin:Vector",
+	"url": "https://github.com/scidsg/ddos-skin",
 	"descriptionmsg": "vector-skin-desc",
 	"namemsg": "vector-specialversion-name",
 	"license-name": "GPL-2.0-or-later",
