@@ -7,7 +7,6 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install -y nginx php-fpm php-mysql php-intl mariadb-server tor whiptail
 
 # Get user input using whiptail
-DB_NAME=$(whiptail --inputbox "Please enter a name for the database:" 8 78 --title "Database Username" 3>&1 1>&2 2>&3)
 DB_USER=$(whiptail --inputbox "Please enter a username for the database user:" 8 78 --title "Database Username" 3>&1 1>&2 2>&3)
 DB_PASSWORD=$(whiptail --passwordbox "Please enter a password for the '$DB_USER' database user:" 8 78 --title "Database Password" 3>&1 1>&2 2>&3)
 SKIN_NAME=$(whiptail --inputbox "Please enter a name for your custom skin (e.g., MyCustomSkin):" 8 78 --title "Skin Name" 3>&1 1>&2 2>&3)
