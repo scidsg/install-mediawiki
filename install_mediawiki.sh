@@ -9,7 +9,7 @@ sudo apt -y autoremove
 sudo apt install -y apache2 php libapache2-mod-php mariadb-server php-mysql php-xml php-mbstring php-apcu php-intl imagemagick php-gd php-cli curl php-curl git
 
 # Get the latest MediaWiki version
-MW_VERSION=$(curl -s https://www.mediawiki.org/wiki/Version_lifecycle | grep -oP 'LTS release[^<]+<a[^>]+>[^<]+' | head -1 | awk -F '[<>]' '{print $5}')
+MW_VERSION=$(curl -s https://www.mediawiki.org/wiki/Template:Latest_stable_software_release/MediaWiki | grep -oP '(?<=release[ _]version=)[^|]+' | head -1)
 
 # Download MediaWiki
 wget https://releases.wikimedia.org/mediawiki/${MW_VERSION%.*}/mediawiki-${MW_VERSION}.tar.gz
