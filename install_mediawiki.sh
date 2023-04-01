@@ -56,14 +56,20 @@ HiddenServicePort 80 127.0.0.1:80
 EOT'
 sudo systemctl restart tor
 
-# Create custom skin
+# Duplicate Vector skin
 cd /var/www/html/mediawiki/skins/
-sudo mkdir "$SKIN_NAME"
-cd "$SKIN_NAME"
-sudo mkdir resources
-sudo touch MyCustomSkin.php
-sudo touch MyCustomSkinTemplate.php
-sudo touch skin.json
+sudo cp -R Vector "$SKIN_NAME"
+
+# Update skin.json
+sudo sed -i "s/\"name\": \"Vector\",/\"name\": \"$SKIN_NAME\",/g" "$SKIN_NAME/skin.json"
+sudo sed -i "s/\"author\": \"Various\",/\"author\": \"$AUTHOR_NAME\",/g" "$SKIN_NAME/skin.json"
+sudo sed -i "s~\"url\": \"https://www.mediawiki.org/wiki/Skin:Vector\",~\"url\": \"$AUTHOR_URL\",~g" "$SKIN_NAME/skin.json"
+sudo sed -i "s/\"descriptionmsg\": \"vector-desc\",/\"descriptionmsg\": \"${SKIN_NAME,,}-desc\",/g" "$SKIN_NAME/skin.json"
+
+# Enable the custom skin in LocalSettings.php
+cd /var/www/html/mediawiki
+sudo bash -c "echo \"wfLoadSkin('$SKIN_NAME');\" >> LocalSettings.php"
+sudo bash -c "echo \"\$wgDefaultSkin = '${SKIN_NAME,,}';\" >> LocalSettings.php"
 
 # Write skin.json
 sudo bash -c "cat <<EOT > skin.json
@@ -81,10 +87,15 @@ sudo bash -c "cat <<EOT > skin.json
     },
     \"ResourceModules\": {
         \"skins.${SKIN_NAME,,}\": {
-            \"styles\": {
-                \"resources/screen.css\": \"all\"
-            }
-        }
+EOT"
+
+# Update the skin.json file to include the custom CSS file
+sudo bash -c "echo \"    \\\"styles\\\": {\" >> /var/www/html/mediawiki/skins/$SKIN_NAME/skin.json"
+sudo bash -c "echo \"        \\\"resources/skins.$SKIN_NAME.styles/custom.css\\\": \\\"all\\\"\" >> /var/www/html/mediawiki/skins/$SKIN_NAME/skin.json"
+sudo bash -c "echo \"    },\" >> /var/www/html/mediawiki/skins/$SKIN_NAME/skin.json"
+
+# Add the closing part of the skin.json file
+sudo bash -c "cat <<EOT >> skin.json
     },
     \"ResourceFileModulePaths\": {
         \"localBasePath\": \"\",
@@ -292,5 +303,6 @@ EOT
 
 # Output Tor Onion address
 onion_address=$(sudo cat /var/lib/tor/mediawiki_hidden_service/hostname)
+echo "Your custom skin has been created and applied to your MediaWiki installation."
 echo "Your MediaWiki installation is accessible via this Onion address:"
 echo "$onion_address"
