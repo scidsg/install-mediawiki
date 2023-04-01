@@ -7,8 +7,7 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install -y nginx php-fpm php-mysql php-intl mariadb-server tor whiptail
 
 # Get user input using whiptail
-EMAIL=$(whiptail --inputbox "What's your email address?" 8 78 --title "Email Address" 3>&1 1>&2 2>&3)
-DB_NAME=$(whiptail --inputbox "Please enter a name for the database:" 8 78 --title "Database Name" 3>&1 1>&2 2>&3)
+DB_NAME=$(whiptail --inputbox "Please enter a name for the database:" 8 78 --title "Database Username" 3>&1 1>&2 2>&3)
 DB_USER=$(whiptail --inputbox "Please enter a username for the database user:" 8 78 --title "Database Username" 3>&1 1>&2 2>&3)
 DB_PASSWORD=$(whiptail --passwordbox "Please enter a password for the '$DB_USER' database user:" 8 78 --title "Database Password" 3>&1 1>&2 2>&3)
 SKIN_NAME=$(whiptail --inputbox "Please enter a name for your custom skin (e.g., MyCustomSkin):" 8 78 --title "Skin Name" 3>&1 1>&2 2>&3)
@@ -201,7 +200,7 @@ $wgResourceBasePath = $wgScriptPath;
 $wgLogos = [
     '1x' => "$wgResourceBasePath/resources/assets/change-your-logo.svg",
     'wordmark' => [
-        "src" => "$DB_NAME",
+        "src" => "DDoS Skin",
         "width" => 119,
         "height" => 18,
     ],
@@ -213,8 +212,8 @@ $wgLogos = [
 $wgEnableEmail = true;
 $wgEnableUserEmail = true; # UPO
 
-$wgEmergencyContact = "$EMAIL";
-$wgPasswordSender = "$EMAIL";
+$wgEmergencyContact = "demo@scidsg.org";
+$wgPasswordSender = "demo@scidsg.org";
 
 $wgEnotifUserTalk = false; # UPO
 $wgEnotifWatchlist = false; # UPO
