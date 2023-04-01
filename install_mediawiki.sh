@@ -4,7 +4,11 @@
 sudo apt update && sudo apt -y dist-upgrade && sudo apt -y autoremove
 
 # Install necessary packages
-sudo apt install -y nginx php-fpm php-mysql php-intl mariadb-server tor whiptail php-mbstring php-xml
+sudo apt install -y nginx php-fpm php-mysql php-intl mariadb-server tor whiptail php-mbstring php-xml nodejs yarn
+
+curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/yarnkey.gpg >/dev/null
+     echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+     sudo apt-get update && sudo apt-get install yarn
 
 # Get user input using whiptail
 EMAIL=$(whiptail --inputbox "What's your email address?" 8 78 --title "Email Address" 3>&1 1>&2 2>&3)
