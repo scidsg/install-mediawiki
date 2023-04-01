@@ -4,7 +4,7 @@
 sudo apt update && sudo apt -y dist-upgrade && sudo apt -y autoremove
 
 # Install necessary packages
-sudo apt install -y nginx php-fpm php-mysql php-intl mariadb-server tor whiptail
+sudo apt install -y nginx php-fpm php-mysql php-intl mariadb-server tor whiptail php-mbstring php-xml
 
 # Get user input using whiptail
 EMAIL=$(whiptail --inputbox "What's your email address?" 8 78 --title "Email Address" 3>&1 1>&2 2>&3)
