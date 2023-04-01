@@ -52,10 +52,11 @@ echo "Please enter your desired database password for MediaWiki:"
 read -r -s db_pass
 
 # Create the database and user
-sudo mysql -e "CREATE DATABASE ${db_name} DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+sudo mysql -e "CREATE DATABASE \`${db_name}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 sudo mysql -e "CREATE USER '${db_user}'@'localhost' IDENTIFIED BY '${db_pass}';"
-sudo mysql -e "GRANT ALL PRIVILEGES ON ${db_name}.* TO '${db_user}'@'localhost';"
+sudo mysql -e "GRANT ALL PRIVILEGES ON \`${db_name}\`.* TO '${db_user}'@'localhost';"
 sudo mysql -e "FLUSH PRIVILEGES;"
+
 
 # Done
 echo "MediaWiki has been installed. Please visit http://mediawiki.local to complete the setup and apply the Vector skin."
