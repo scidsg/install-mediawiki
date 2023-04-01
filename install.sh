@@ -47,13 +47,10 @@ sudo a2dissite 000-default
 # Restart Apache
 sudo systemctl restart apache2
 
-# Set up the database
-echo "Please enter your desired database name for MediaWiki:"
-read -r db_name
-echo "Please enter your desired database username for MediaWiki:"
-read -r db_user
-echo "Please enter your desired database password for MediaWiki:"
-read -r -s db_pass
+read -p "Please enter your desired database name for MediaWiki: " db_name
+read -p "Please enter your desired database username for MediaWiki: " db_user
+read -s -p "Please enter your desired database password for MediaWiki: " db_pass
+echo
 
 # Create the database and user
 sudo mysql -e "CREATE DATABASE \`${db_name}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
