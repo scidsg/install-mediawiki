@@ -9,11 +9,12 @@ sudo apt -y autoremove
 sudo apt install -y apache2 php libapache2-mod-php mariadb-server php-mysql php-xml php-mbstring php-apcu php-intl imagemagick php-gd php-cli curl php-curl git
 
 # Get the latest MediaWiki version and tarball URL
-MW_TARBALL_URL=$(curl -s https://www.mediawiki.org/wiki/Download | grep -oP '(?<=href=")[^"]+(?=\.tar\.gz instead)' | head -1)
+MW_TARBALL_URL=$(curl -s https://releases.wikimedia.org/mediawiki/ | grep -oP 'mediawiki-[^"]+.tar.gz' | sort -rV | head -1)
 MW_VERSION=$(echo $MW_TARBALL_URL | grep -oP '(?<=mediawiki-)[^/]+')
+MW_TARBALL_URL="https://releases.wikimedia.org/mediawiki/${MW_VERSION}/${MW_TARBALL_URL}"
 
 # Download MediaWiki
-wget "${MW_TARBALL_URL}.tar.gz"
+wget -O mediawiki-${MW_VERSION}.tar.gz "${MW_TARBALL_URL}.tar.gz"
 tar xvzf mediawiki-${MW_VERSION}.tar.gz
 
 # Move MediaWiki to the web server directory
