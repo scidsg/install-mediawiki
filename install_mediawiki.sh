@@ -19,7 +19,7 @@ sudo mysql -e "FLUSH PRIVILEGES;"
 wget https://releases.wikimedia.org/mediawiki/1.37/mediawiki-1.37.0.tar.gz
 tar xvzf mediawiki-*.tar.gz
 sudo mkdir -p /var/www/html/mediawiki
-sudo mv mediawiki-1.37.0/* /var/www/html/mediawiki
+sudo mv mediawiki*/* /var/www/html/mediawiki
 
 # Configure Nginx
 sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
