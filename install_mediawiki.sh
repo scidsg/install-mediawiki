@@ -136,15 +136,13 @@ class ${SKIN_NAME}Template extends BaseTemplate {
 EOT"
 
 # Create CSS file
-sudo touch resources/screen.css
+sudo mkdir -p "/var/www/html/mediawiki/skins/$SKIN_NAME/resources/skins.${SKIN_NAME}.styles/"
+sudo touch "/var/www/html/mediawiki/skins/$SKIN_NAME/resources/skins.${SKIN_NAME}.styles/custom.css"
 
 # Enable the custom skin in LocalSettings.php
 cd /var/www/html/mediawiki
 sudo bash -c "echo \"wfLoadSkin('$SKIN_NAME');\" >> LocalSettings.php"
 sudo bash -c "echo \"\$wgDefaultSkin = '${SKIN_NAME,,}';\" >> LocalSettings.php"
-
-echo "Your custom skin has been created and applied to your MediaWiki installation."
-
 
 # Create LocalSettings.php file
 sudo bash -c "cat > /var/www/html/mediawiki/LocalSettings.php" << 'EOT'
