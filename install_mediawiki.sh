@@ -12,6 +12,8 @@ DB_PASSWORD=$(whiptail --passwordbox "Please enter a password for the '$DB_USER'
 SKIN_NAME=$(whiptail --inputbox "Please enter a name for your custom skin (e.g., MyCustomSkin):" 8 78 --title "Skin Name" 3>&1 1>&2 2>&3)
 AUTHOR_NAME=$(whiptail --inputbox "Please enter your name (author of the custom skin):" 8 78 --title "Author Name" 3>&1 1>&2 2>&3)
 AUTHOR_URL=$(whiptail --inputbox "Please enter your website URL (author of the custom skin):" 8 78 --title "Author URL" 3>&1 1>&2 2>&3)
+CUSTOM_CSS="resources/custom.css"
+SKIN_DIR="/var/www/html/mediawiki/skins/$SKIN_NAME"
 
 # Configure MariaDB
 sudo mysql_secure_installation
@@ -139,6 +141,15 @@ EOT"
 sudo mkdir -p "/var/www/html/mediawiki/skins/$SKIN_NAME/resources/skins.${SKIN_NAME}.styles/"
 sudo touch "/var/www/html/mediawiki/skins/$SKIN_NAME/resources/skins.${SKIN_NAME}.styles/custom.css"
 
+# Create the custom CSS file
+sudo mkdir -p "$SKIN_DIR/resources"
+sudo touch "$SKIN_DIR/$CUSTOM_CSS"
+
+# Update the skin.json file
+sudo sed -i "/\"ResourceModules\": {/a \\ \ \ \ \ \"skins.${SKIN_NAME,,}\": {\\n \ \ \ \ \ \ \"styles\": {\\n \ \ \ \ \ \ \ \ \"resources/custom.css\": \"all\"\\n \ \ \ \ \ \ },\\n \ \ \ \ \ \ \"localBasePath\": \"\",\\n \ \ \ \ \ \ \"remoteSkinPath\": \"$SKIN_NAME\"\\n \ \ \ \ }," "$SKIN_DIR/skin.json"
+
+echo "Custom CSS file created and skin.json updated."
+
 # Enable the custom skin in LocalSettings.php
 cd /var/www/html/mediawiki
 sudo bash -c "echo \"wfLoadSkin('$SKIN_NAME');\" >> LocalSettings.php"
@@ -162,7 +173,6 @@ sudo bash -c "cat > /var/www/html/mediawiki/LocalSettings.php" << 'EOT'
 if ( !defined( 'MEDIAWIKI' ) ) {
     exit;
 }
-
 
 ## Uncomment this to disable output compression
 # $wgDisableOutputCompression = true;
