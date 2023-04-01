@@ -1,56 +1,61 @@
 #!/bin/bash
 
-# Update and upgrade packages
-sudo apt update && sudo apt upgrade -y
+# Update the system
+sudo apt update
+sudo apt -y dist-upgrade
+sudo apt -y autoremove
 
 # Install necessary packages
-sudo apt install -y nginx php-fpm php-mysql php-intl mariadb-server tor
+sudo apt install -y apache2 php libapache2-mod-php mariadb-server php-mysql php-xml php-mbstring php-apcu php-intl imagemagick php-gd php-cli php-curl git
 
-# Configure MariaDB
-sudo mysql_secure_installation
+# Download MediaWiki
+wget https://releases.wikimedia.org/mediawiki/1.39/mediawiki-1.39.3.tar.gz
+tar xvzf mediawiki-1.39.3.tar.gz
 
-# Create a database and user for MediaWiki
-sudo mysql -e "CREATE DATABASE mediawiki;"
-sudo mysql -e "CREATE USER 'mediawiki'@'localhost' IDENTIFIED BY 'your_password_here';"
-sudo mysql -e "GRANT ALL PRIVILEGES ON mediawiki.* TO 'mediawiki'@'localhost';"
+# Move MediaWiki to the web server directory
+sudo mv mediawiki-1.39.3 /var/www/html/mediawiki
+
+# Set appropriate permissions
+sudo chown -R www-data:www-data /var/www/html/mediawiki
+sudo chmod -R 755 /var/www/html/mediawiki
+
+# Enable Apache rewrite module
+sudo a2enmod rewrite
+
+# Create a MediaWiki Apache configuration file
+sudo bash -c 'cat > /etc/apache2/sites-available/mediawiki.conf << EOL
+<VirtualHost *:80>
+    ServerName mediawiki.local
+    DocumentRoot /var/www/html/mediawiki
+
+    <Directory /var/www/html/mediawiki/>
+        Options FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+EOL'
+
+# Enable the MediaWiki site and disable the default site
+sudo a2ensite mediawiki
+sudo a2dissite 000-default
+
+# Restart Apache
+sudo systemctl restart apache2
+
+# Set up the database
+echo "Please enter your desired database name for MediaWiki:"
+read -r db_name
+echo "Please enter your desired database username for MediaWiki:"
+read -r db_user
+echo "Please enter your desired database password for MediaWiki:"
+read -r -s db_pass
+
+# Create the database and user
+sudo mysql -e "CREATE DATABASE ${db_name} DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+sudo mysql -e "CREATE USER '${db_user}'@'localhost' IDENTIFIED BY '${db_pass}';"
+sudo mysql -e "GRANT ALL PRIVILEGES ON ${db_name}.* TO '${db_user}'@'localhost';"
 sudo mysql -e "FLUSH PRIVILEGES;"
 
-# Download and extract MediaWiki
-wget https://releases.wikimedia.org/mediawiki/1.39/mediawiki-1.39.3.tar.gz
-tar xvzf mediawiki-*.tar.gz
-sudo mkdir -p /var/www/html/mediawiki
-sudo mv mediawiki*/* /var/www/html/mediawiki
-
-# Configure Nginx
-sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
-sudo bash -c 'cat <<EOT > /etc/nginx/sites-available/default
-server {
-    listen 80;
-    server_name localhost;
-    root /var/www/html/mediawiki;
-    index index.php;
-
-    location / {
-        try_files $uri $uri/ /index.php?$args;
-    }
-
-    location ~ \.php$ {
-        include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/run/php/php7.4-fpm.sock;
-    }
-}
-EOT'
-sudo systemctl restart nginx
-
-# Configure Tor Onion Service
-sudo bash -c 'cat <<EOT >> /etc/tor/torrc
-HiddenServiceDir /var/lib/tor/mediawiki_hidden_service/
-HiddenServicePort 80 127.0.0.1:80
-EOT'
-sudo systemctl restart tor
-sleep 5
-
-# Output Tor Onion address
-onion_address=$(sudo cat /var/lib/tor/mediawiki_hidden_service/hostname)
-echo "Your MediaWiki installation is accessible via this Onion address:"
-echo "$onion_address"
+# Done
+echo "MediaWiki has been installed. Please visit http://mediawiki.local to complete the setup and apply the Vector skin."
