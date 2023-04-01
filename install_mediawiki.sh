@@ -13,7 +13,7 @@ MW_TARBALL_URL=$(curl -s https://www.mediawiki.org/wiki/Download | grep -oP '(?<
 MW_VERSION=$(echo $MW_TARBALL_URL | grep -oP '(?<=mediawiki-)[^/]+')
 
 # Download MediaWiki
-wget $MW_TARBALL_URL
+wget "${MW_TARBALL_URL}.tar.gz"
 tar xvzf mediawiki-${MW_VERSION}.tar.gz
 
 # Move MediaWiki to the web server directory
