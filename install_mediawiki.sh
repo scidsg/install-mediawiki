@@ -8,7 +8,7 @@ sudo apt install -y nginx php-fpm php-mysql php-intl mariadb-server tor whiptail
 
 # Get user input using whiptail
 DB_USER=$(whiptail --inputbox "Please enter a username for the database user:" 8 78 --title "Database Username" 3>&1 1>&2 2>&3)
-DB_PASSWORD=$(whiptail --passwordbox "Please enter a password for the '$DB_USER' database user:" 8 78 --title "Database Password" 3>&1 1>&2 2>&3)
+DB_PASSWORD=$(whiptail --passwordbox "Please enter a password for the 'mediawiki' database user:" 8 78 --title "Database Password" 3>&1 1>&2 2>&3)
 SKIN_NAME=$(whiptail --inputbox "Please enter a name for your custom skin (e.g., MyCustomSkin):" 8 78 --title "Skin Name" 3>&1 1>&2 2>&3)
 AUTHOR_NAME=$(whiptail --inputbox "Please enter your name (author of the custom skin):" 8 78 --title "Author Name" 3>&1 1>&2 2>&3)
 AUTHOR_URL=$(whiptail --inputbox "Please enter your website URL (author of the custom skin):" 8 78 --title "Author URL" 3>&1 1>&2 2>&3)
@@ -56,20 +56,14 @@ HiddenServicePort 80 127.0.0.1:80
 EOT'
 sudo systemctl restart tor
 
-# Duplicate Vector skin
+# Create custom skin
 cd /var/www/html/mediawiki/skins/
-sudo cp -R Vector "$SKIN_NAME"
-
-# Update skin.json
-sudo sed -i "s/\"name\": \"Vector\",/\"name\": \"$SKIN_NAME\",/g" "$SKIN_NAME/skin.json"
-sudo sed -i "s/\"author\": \"Various\",/\"author\": \"$AUTHOR_NAME\",/g" "$SKIN_NAME/skin.json"
-sudo sed -i "s~\"url\": \"https://www.mediawiki.org/wiki/Skin:Vector\",~\"url\": \"$AUTHOR_URL\",~g" "$SKIN_NAME/skin.json"
-sudo sed -i "s/\"descriptionmsg\": \"vector-desc\",/\"descriptionmsg\": \"${SKIN_NAME,,}-desc\",/g" "$SKIN_NAME/skin.json"
-
-# Enable the custom skin in LocalSettings.php
-cd /var/www/html/mediawiki
-sudo bash -c "echo \"wfLoadSkin('$SKIN_NAME');\" >> LocalSettings.php"
-sudo bash -c "echo \"\$wgDefaultSkin = '${SKIN_NAME,,}';\" >> LocalSettings.php"
+sudo mkdir "$SKIN_NAME"
+cd "$SKIN_NAME"
+sudo mkdir resources
+sudo touch MyCustomSkin.php
+sudo touch MyCustomSkinTemplate.php
+sudo touch skin.json
 
 # Write skin.json
 sudo bash -c "cat <<EOT > skin.json
@@ -87,15 +81,10 @@ sudo bash -c "cat <<EOT > skin.json
     },
     \"ResourceModules\": {
         \"skins.${SKIN_NAME,,}\": {
-EOT"
-
-# Update the skin.json file to include the custom CSS file
-sudo bash -c "echo \"    \\\"styles\\\": {\" >> /var/www/html/mediawiki/skins/$SKIN_NAME/skin.json"
-sudo bash -c "echo \"        \\\"resources/skins.$SKIN_NAME.styles/custom.css\\\": \\\"all\\\"\" >> /var/www/html/mediawiki/skins/$SKIN_NAME/skin.json"
-sudo bash -c "echo \"    },\" >> /var/www/html/mediawiki/skins/$SKIN_NAME/skin.json"
-
-# Add the closing part of the skin.json file
-sudo bash -c "cat <<EOT >> skin.json
+            \"styles\": {
+                \"resources/screen.css\": \"all\"
+            }
+        }
     },
     \"ResourceFileModulePaths\": {
         \"localBasePath\": \"\",
@@ -144,6 +133,7 @@ sudo bash -c "echo \"wfLoadSkin('$SKIN_NAME');\" >> LocalSettings.php"
 sudo bash -c "echo \"\$wgDefaultSkin = '${SKIN_NAME,,}';\" >> LocalSettings.php"
 
 echo "Your custom skin has been created and applied to your MediaWiki installation."
+
 
 # Create LocalSettings.php file
 sudo bash -c "cat > /var/www/html/mediawiki/LocalSettings.php" << 'EOT'
@@ -302,6 +292,5 @@ EOT
 
 # Output Tor Onion address
 onion_address=$(sudo cat /var/lib/tor/mediawiki_hidden_service/hostname)
-echo "Your custom skin has been created and applied to your MediaWiki installation."
 echo "Your MediaWiki installation is accessible via this Onion address:"
 echo "$onion_address"
