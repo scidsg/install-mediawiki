@@ -61,9 +61,7 @@ sudo mysql -e "FLUSH PRIVILEGES;"
 # Clone Vector
 cd /var/www/html/mediawiki/skins
 git clone https://github.com/glenn-sorrentino/MyVectorSkin.git
-cd MyVectorSkin/
-chmod +x rename.sh
-./rename.sh
+cd MyVectorSkin/ && chmod +x rename.sh && ./rename.sh
 
 # Done
 echo "MediaWiki has been installed. Please visit http://mediawiki.local to complete the setup and apply the Vector skin."
