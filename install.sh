@@ -67,12 +67,7 @@ cd MyVectorSkin/
 cat > /var/www/html/mediawiki/skins/MyVectorSkin/rename.py << EOL
 import os
 
-OLD_NAME = "Vector"
-NEW_NAME = "MyVectorSkin"
-OLD_NAME_LOWER = "vector"
-NEW_NAME_LOWER = "myvectorskin"
-
-def replace_in_file(file_path, old, new):
+def replace_in_file(file_path, old, new, old_lower, new_lower):
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             content = file.read()
@@ -81,9 +76,17 @@ def replace_in_file(file_path, old, new):
         return
 
     content = content.replace(old, new)
+    content = content.replace(old_lower, new_lower)
+    camel_case_old = old[0].lower() + old[1:]
+    camel_case_new = new[0].lower() + new[1:]
+    content = content.replace(camel_case_old, camel_case_new)
     with open(file_path, 'w', encoding='utf-8') as file:
         file.write(content)
 
+OLD_NAME = "Vector"
+NEW_NAME = "MyVectorSkin"
+OLD_NAME_LOWER = "vector"
+NEW_NAME_LOWER = "myvectorskin"
 
 for root, dirs, files in os.walk('.', topdown=False):
     for name in dirs:
@@ -97,10 +100,8 @@ for root, dirs, files in os.walk('.', topdown=False):
         new_file = os.path.join(root, name.replace(OLD_NAME, NEW_NAME).replace(OLD_NAME_LOWER, NEW_NAME_LOWER))
         if old_file != new_file:
             os.rename(old_file, new_file)
-        
-        # Replace contents in files
-        replace_in_file(new_file, OLD_NAME, NEW_NAME)
-        replace_in_file(new_file, OLD_NAME_LOWER, NEW_NAME_LOWER)
+        replace_in_file(new_file, OLD_NAME, NEW_NAME, OLD_NAME_LOWER, NEW_NAME_LOWER)
+
 EOL
 python3 rename.py
 rm rename.py
