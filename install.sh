@@ -52,11 +52,6 @@ db_name=$(whiptail --inputbox "Please enter your desired database name for Media
 db_user=$(whiptail --inputbox "Please enter your desired database username for MediaWiki:" 8 78 --title "Database Username" 3>&1 1>&2 2>&3)
 db_pass=$(whiptail --passwordbox "Please enter your desired database password for MediaWiki:" 8 78 --title "Database Password" 3>&1 1>&2 2>&3)
 
-# Clear old DB
-sudo mysql -e "DROP DATABASE \`${db_name}\`;"
-sudo mysql -e "DROP USER '${db_user}'@'localhost';"
-sudo mysql -e "FLUSH PRIVILEGES;"
-
 # Create the database and user
 sudo mysql -e "CREATE DATABASE \`${db_name}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 sudo mysql -e "CREATE USER '${db_user}'@'localhost' IDENTIFIED BY '${db_pass}';"
